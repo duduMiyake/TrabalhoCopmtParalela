@@ -1,53 +1,32 @@
 package Merge_sort;
+
+import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
-public class mergeSortParalelo {
-    public static void main(String[] args) {
-        int[] numeros = gerarNumeros(10000);
+public class MergeSortParalelo extends RecursiveAction {
+    private final int[] array;
+    private final int inicio;
+    private final int fim;
 
-        System.out.println("Antes do merge sort paralelo:");
-        imprimir(numeros);
-
-        long tempoInicial = System.currentTimeMillis();
-        merge_sort_paralelo(numeros, 0, numeros.length - 1);
-        long tempoFinal = System.currentTimeMillis();
-
-        System.out.println("Depois do merge sort paralelo:");
-        imprimir(numeros);
-
-        long tempoExecucao = tempoFinal - tempoInicial;
-        System.out.println("\nTempo de execução: " + tempoExecucao + " milissegundos");
+    public MergeSortParalelo(int[] array, int inicio, int fim) {
+        this.array = array;
+        this.inicio = inicio;
+        this.fim = fim;
     }
 
-    public static int[] gerarNumeros(int tamanho) {
-        int[] numeros = new int[tamanho];
-        Random aleatorio = new Random();
-        for (int i = 0; i < tamanho; i++) {
-            numeros[i] = aleatorio.nextInt(1000000);
-        }
-        return numeros;
-    }
-
-    public static void merge_sort_paralelo(int[] arr, int inicio, int fim) {
+    @Override
+    protected void compute() {
         if (inicio < fim) {
             int meio = (inicio + fim) / 2;
 
-            ExecutorService executor = Executors.newFixedThreadPool(2);
+            MergeSortParalelo leftTask = new MergeSortParalelo(array, inicio, meio);
+            MergeSortParalelo rightTask = new MergeSortParalelo(array, meio + 1, fim);
 
-            executor.submit(() -> merge_sort_paralelo(arr, inicio, meio));
-            executor.submit(() -> merge_sort_paralelo(arr, meio + 1, fim));
+            invokeAll(leftTask, rightTask);
 
-            executor.shutdown();
-            try {
-                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            merge(arr, inicio, meio, fim);
+            merge(array, inicio, meio, fim);
         }
     }
 
@@ -88,6 +67,45 @@ public class mergeSortParalelo {
             j++;
             k++;
         }
+    }
+
+    public static void main(String[] args) {
+        int[] array = gerarNumeros(10000);
+
+        System.out.println("Antes do merge sort paralelo:");
+        imprimir(array);
+
+        // inicio do tempo
+        long tempoInicial = System.currentTimeMillis();
+
+        // NUMERO DE THREADS PRE DEFINIDOS
+        int numThreads = 12;
+
+        ForkJoinPool pool = new ForkJoinPool(numThreads);
+
+        MergeSortParalelo mergeSort = new MergeSortParalelo(array, 0, array.length - 1);
+
+        pool.invoke(mergeSort);
+
+        long tempoFinal = System.currentTimeMillis();
+        // fim do tempo
+
+        System.out.println("Depois do merge sort paralelo:");
+        imprimir(array);
+
+        long tempoExecucao = tempoFinal - tempoInicial;
+        System.out.println("\nTempo de execução: " + tempoExecucao + " milissegundos");
+
+        pool.shutdown();
+    }
+
+    public static int[] gerarNumeros(int tamanho) {
+        int[] numeros = new int[tamanho];
+        Random aleatorio = new Random();
+        for (int i = 0; i < tamanho; i++) {
+            numeros[i] = aleatorio.nextInt(1000000);
+        }
+        return numeros;
     }
 
     public static void imprimir(int[] numeros) {

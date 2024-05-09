@@ -1,7 +1,7 @@
 package Quick_sort;
 import java.util.Random;
 
-public class quickSortSerial {
+public class QuickSortSerial {
     public static void main(String[] args) {
         int[] numeros = gerarNumeros(10000);
 

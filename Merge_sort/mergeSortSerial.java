@@ -1,7 +1,7 @@
 package Merge_sort;
 import java.util.Random;
 
-public class mergeSortSerial {
+public class MergeSortSerial {
     public static void main(String[] args) {
         int[] numeros = gerarNumeros(10000);
 

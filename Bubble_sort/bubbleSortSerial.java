@@ -1,11 +1,11 @@
 package Bubble_sort;
 import java.util.Random;
 
-public class bubbleSortSerial {
+public class BubbleSortSerial {
 
     public static void main(String[] args) {
 
-        int[] numeros = gerarNumeros(10000);
+        int[] numeros = gerarNumeros(1000);
 
         long tempoInicial =  System.currentTimeMillis();
         System.out.println("Antes do bubble sort serial:");

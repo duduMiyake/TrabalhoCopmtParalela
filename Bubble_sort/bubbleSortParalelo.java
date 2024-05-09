@@ -3,11 +3,11 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class bubbleSortParalelo {
+public class BubbleSortParalelo {
 
     public static void main(String[] args) {
 
-        int[] numeros = gerarNumeros(10000);
+        int[] numeros = gerarNumeros(1000);
 
         System.out.println("Antes do bubble sort paralelo:");
         imprimir(numeros);
