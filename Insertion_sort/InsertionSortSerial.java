@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class InsertionSortSerial {
     public static void main(String[] args) {
-        int[] numeros = gerarNumeros(10000);
+        int[] numeros = gerarNumeros(10);
 
         System.out.println("Antes do insertion sort serial:");
         imprimir(numeros);

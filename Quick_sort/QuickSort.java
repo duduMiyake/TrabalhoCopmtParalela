@@ -1,11 +1,11 @@
-package Insertion_sort;
+package Quick_sort;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
-public class InsertionSort {
+public class QuickSort{
 
     public static void main(String[] args) {
         int[] tamanhos = {10, 100, 1000, 10000, 100000};
@@ -19,7 +19,7 @@ public class InsertionSort {
 
             // Serial
             long tempoInicialSerial = System.currentTimeMillis();
-            insertion_sort_serial(numerosSerial);
+            quicksort_serial(numerosSerial, 0, numerosSerial.length - 1);
             long tempoFinalSerial = System.currentTimeMillis();
             long tempoExecucaoSerial = tempoFinalSerial - tempoInicialSerial;
 
@@ -27,14 +27,14 @@ public class InsertionSort {
 
             // Paralelo
             long tempoInicialParalelo = System.currentTimeMillis();
-            insertion_sort_paralelo(numerosParalelo);
+            quicksort_paralelo(numerosParalelo, 0, numerosParalelo.length - 1);
             long tempoFinalParalelo = System.currentTimeMillis();
             long tempoExecucaoParalelo = tempoFinalParalelo - tempoInicialParalelo;
 
             System.out.println("Tempo de execução (Paralelo): " + tempoExecucaoParalelo + " milissegundos");
 
             // Escreve os resultados em um arquivo CSV
-            escreverCSV("resultados_insertion_sort.csv", new String[]{"Serial", "Paralelo"}, new long[]{tempoExecucaoSerial, tempoExecucaoParalelo}, tamanho);
+            escreverCSV("resultados_quicksort.csv", new String[]{"Serial", "Paralelo"}, new long[]{tempoExecucaoSerial, tempoExecucaoParalelo}, tamanho);
         }
     }
 
@@ -47,22 +47,35 @@ public class InsertionSort {
         return numeros;
     }
 
-    public static void insertion_sort_serial(int[] arr) {
-        for (int i = 1; i < arr.length; i++) {
-            int chave = arr[i];
-            int j = i - 1;
-            while (j >= 0 && arr[j] > chave) {
-                arr[j + 1] = arr[j];
-                j--;
-            }
-            arr[j + 1] = chave;
+    public static void quicksort_serial(int[] arr, int inicio, int fim) {
+        if (inicio < fim) {
+            int indiceParticao = particionar(arr, inicio, fim);
+            quicksort_serial(arr, inicio, indiceParticao - 1);
+            quicksort_serial(arr, indiceParticao + 1, fim);
         }
     }
 
-    public static void insertion_sort_paralelo(int[] arr) {
+    public static void quicksort_paralelo(int[] arr, int inicio, int fim) {
         ForkJoinPool pool = new ForkJoinPool();
-        pool.invoke(new InsertionSortParalelo(arr, 0, arr.length - 1));
+        pool.invoke(new QuicksortParalelo(arr, inicio, fim));
         pool.shutdown();
+    }
+
+    public static int particionar(int[] arr, int inicio, int fim) {
+        int pivo = arr[fim];
+        int i = inicio - 1;
+        for (int j = inicio; j < fim; j++) {
+            if (arr[j] < pivo) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[fim];
+        arr[fim] = temp;
+        return i + 1;
     }
 
     public static void escreverCSV(String nomeArquivo, String[] algoritmos, long[] tempos, int tamanho) {
@@ -80,12 +93,12 @@ public class InsertionSort {
         }
     }
 
-    static class InsertionSortParalelo extends RecursiveAction {
+    static class QuicksortParalelo extends RecursiveAction {
         private final int[] array;
         private final int inicio;
         private final int fim;
 
-        public InsertionSortParalelo(int[] array, int inicio, int fim) {
+        public QuicksortParalelo(int[] array, int inicio, int fim) {
             this.array = array;
             this.inicio = inicio;
             this.fim = fim;
@@ -93,15 +106,31 @@ public class InsertionSort {
 
         @Override
         protected void compute() {
-            for (int i = inicio + 1; i <= fim; i++) {
-                int chave = array[i];
-                int j = i - 1;
-                while (j >= inicio && array[j] > chave) {
-                    array[j + 1] = array[j];
-                    j--;
-                }
-                array[j + 1] = chave;
+            if (inicio < fim) {
+                int indiceParticao = particionar(array, inicio, fim);
+
+                QuicksortParalelo leftTask = new QuicksortParalelo(array, inicio, indiceParticao - 1);
+                QuicksortParalelo rightTask = new QuicksortParalelo(array, indiceParticao + 1, fim);
+
+                invokeAll(leftTask, rightTask);
             }
+        }
+
+        private int particionar(int[] arr, int inicio, int fim) {
+            int pivo = arr[fim];
+            int i = inicio - 1;
+            for (int j = inicio; j < fim; j++) {
+                if (arr[j] < pivo) {
+                    i++;
+                    int temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+                }
+            }
+            int temp = arr[i + 1];
+            arr[i + 1] = arr[fim];
+            arr[fim] = temp;
+            return i + 1;
         }
     }
 }

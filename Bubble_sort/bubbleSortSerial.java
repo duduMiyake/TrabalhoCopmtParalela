@@ -5,7 +5,7 @@ public class BubbleSortSerial {
 
     public static void main(String[] args) {
 
-        int[] numeros = gerarNumeros(1000);
+        int[] numeros = gerarNumeros(100000);
 
         long tempoInicial =  System.currentTimeMillis();
         System.out.println("Antes do bubble sort serial:");

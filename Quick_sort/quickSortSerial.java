@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class QuickSortSerial {
     public static void main(String[] args) {
-        int[] numeros = gerarNumeros(10000);
+        int[] numeros = gerarNumeros(10);
 
         long tempoInicial =  System.currentTimeMillis();
         System.out.println("Antes do Quick Sort serial:");

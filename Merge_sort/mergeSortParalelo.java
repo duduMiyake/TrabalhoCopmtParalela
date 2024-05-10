@@ -70,7 +70,7 @@ public class MergeSortParalelo extends RecursiveAction {
     }
 
     public static void main(String[] args) {
-        int[] array = gerarNumeros(10000);
+        int[] array = gerarNumeros(100000);
 
         System.out.println("Antes do merge sort paralelo:");
         imprimir(array);

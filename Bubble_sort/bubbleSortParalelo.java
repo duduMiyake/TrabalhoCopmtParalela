@@ -7,7 +7,7 @@ public class BubbleSortParalelo {
 
     public static void main(String[] args) {
 
-        int[] numeros = gerarNumeros(1000);
+        int[] numeros = gerarNumeros(100000);
 
         System.out.println("Antes do bubble sort paralelo:");
         imprimir(numeros);
@@ -20,7 +20,7 @@ public class BubbleSortParalelo {
         imprimir(numeros);
 
         long tempoExecucao = tempoFinal - tempoInicial;
-        System.out.println("\nExecution time: " + tempoExecucao + " milisseconds");
+        System.out.println("\nTempo de execucao: " + tempoExecucao + " milisseconds");
     }
 
     public static int[] gerarNumeros(int tamanho) {

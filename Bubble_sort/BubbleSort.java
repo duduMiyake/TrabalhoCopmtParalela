@@ -1,11 +1,11 @@
-package Insertion_sort;
+package Bubble_sort;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
-public class InsertionSort {
+public class BubbleSort {
 
     public static void main(String[] args) {
         int[] tamanhos = {10, 100, 1000, 10000, 100000};
@@ -19,7 +19,7 @@ public class InsertionSort {
 
             // Serial
             long tempoInicialSerial = System.currentTimeMillis();
-            insertion_sort_serial(numerosSerial);
+            bubbleSort_serial(numerosSerial);
             long tempoFinalSerial = System.currentTimeMillis();
             long tempoExecucaoSerial = tempoFinalSerial - tempoInicialSerial;
 
@@ -27,14 +27,14 @@ public class InsertionSort {
 
             // Paralelo
             long tempoInicialParalelo = System.currentTimeMillis();
-            insertion_sort_paralelo(numerosParalelo);
+            bubbleSort_paralelo(numerosParalelo);
             long tempoFinalParalelo = System.currentTimeMillis();
             long tempoExecucaoParalelo = tempoFinalParalelo - tempoInicialParalelo;
 
             System.out.println("Tempo de execução (Paralelo): " + tempoExecucaoParalelo + " milissegundos");
 
             // Escreve os resultados em um arquivo CSV
-            escreverCSV("resultados_insertion_sort.csv", new String[]{"Serial", "Paralelo"}, new long[]{tempoExecucaoSerial, tempoExecucaoParalelo}, tamanho);
+            escreverCSV("resultados_bubblesort.csv", new String[]{"Serial", "Paralelo"}, new long[]{tempoExecucaoSerial, tempoExecucaoParalelo}, tamanho);
         }
     }
 
@@ -47,21 +47,23 @@ public class InsertionSort {
         return numeros;
     }
 
-    public static void insertion_sort_serial(int[] arr) {
-        for (int i = 1; i < arr.length; i++) {
-            int chave = arr[i];
-            int j = i - 1;
-            while (j >= 0 && arr[j] > chave) {
-                arr[j + 1] = arr[j];
-                j--;
+    public static void bubbleSort_serial(int[] arr) {
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    // Troca arr[j] e arr[j+1]
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
             }
-            arr[j + 1] = chave;
         }
     }
 
-    public static void insertion_sort_paralelo(int[] arr) {
+    public static void bubbleSort_paralelo(int[] arr) {
         ForkJoinPool pool = new ForkJoinPool();
-        pool.invoke(new InsertionSortParalelo(arr, 0, arr.length - 1));
+        pool.invoke(new BubbleSortParalelo(arr, 0, arr.length - 1));
         pool.shutdown();
     }
 
@@ -80,12 +82,12 @@ public class InsertionSort {
         }
     }
 
-    static class InsertionSortParalelo extends RecursiveAction {
+    static class BubbleSortParalelo extends RecursiveAction {
         private final int[] array;
         private final int inicio;
         private final int fim;
 
-        public InsertionSortParalelo(int[] array, int inicio, int fim) {
+        public BubbleSortParalelo(int[] array, int inicio, int fim) {
             this.array = array;
             this.inicio = inicio;
             this.fim = fim;
@@ -93,14 +95,15 @@ public class InsertionSort {
 
         @Override
         protected void compute() {
-            for (int i = inicio + 1; i <= fim; i++) {
-                int chave = array[i];
-                int j = i - 1;
-                while (j >= inicio && array[j] > chave) {
-                    array[j + 1] = array[j];
-                    j--;
+            for (int i = inicio; i < fim; i++) {
+                for (int j = inicio; j < fim - i - 1; j++) {
+                    if (array[j] > array[j + 1]) {
+                        // Troca array[j] e array[j+1]
+                        int temp = array[j];
+                        array[j] = array[j + 1];
+                        array[j + 1] = temp;
+                    }
                 }
-                array[j + 1] = chave;
             }
         }
     }

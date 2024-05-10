@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class MergeSortSerial {
     public static void main(String[] args) {
-        int[] numeros = gerarNumeros(10000);
+        int[] numeros = gerarNumeros(100000);
 
         System.out.println("Antes do merge sort serial:");
         imprimir(numeros);
