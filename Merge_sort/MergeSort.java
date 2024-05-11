@@ -35,7 +35,7 @@ public class MergeSort {
             System.out.println("Tempo de execução (Paralelo): " + tempoExecucaoParalelo + " milissegundos");
 
             // Escreve os resultados em um arquivo CSV
-            escreverCSV("resultados.csv", new String[]{"Serial", "Paralelo"}, new long[]{tempoExecucaoSerial, tempoExecucaoParalelo}, tamanho);
+            escreverCSV("resultados_mergesort.csv", new String[]{"Serial", "Paralelo"}, new long[]{tempoExecucaoSerial, tempoExecucaoParalelo}, tamanho);
         }
     }
 

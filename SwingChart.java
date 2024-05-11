@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class SwingChart extends JFrame {
 
@@ -40,9 +41,30 @@ public class SwingChart extends JFrame {
 
     private DefaultCategoryDataset createDataset() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Digite a busca desejada (1 para merge, 2 para quick, 3 para insertion e 4 para bubble): " );
+        int busca = scanner.nextInt();
+        String nome;
+        if(busca == 1)
+        {
+            nome = "resultados_mergesort.csv";
+        } else if (busca == 2)
+        {
+            nome = "resultados_quicksort.csv";
+        } else if (busca == 3)
+        {
+            nome = "resultados_insertionsort.csv";
+        } else if (busca == 4)
+        {
+            nome = "resultados_bubblesort.csv";
+        } else 
+        {
+            nome = "resultados_mergesort.csv"; // retorna merge por padrão
+        }
+
     
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("resultados.csv"));
+            BufferedReader reader = new BufferedReader(new FileReader(nome));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");

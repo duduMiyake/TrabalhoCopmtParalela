@@ -34,7 +34,7 @@ public class InsertionSort {
             System.out.println("Tempo de execução (Paralelo): " + tempoExecucaoParalelo + " milissegundos");
 
             // Escreve os resultados em um arquivo CSV
-            escreverCSV("resultados_insertion_sort.csv", new String[]{"Serial", "Paralelo"}, new long[]{tempoExecucaoSerial, tempoExecucaoParalelo}, tamanho);
+            escreverCSV("resultados_insertionsort.csv", new String[]{"Serial", "Paralelo"}, new long[]{tempoExecucaoSerial, tempoExecucaoParalelo}, tamanho);
         }
     }
 

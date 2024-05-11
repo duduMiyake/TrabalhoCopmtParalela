@@ -1,0 +1,10 @@
+10 elementos,Serial,0
+10 elementos,Paralelo,2
+100 elementos,Serial,0
+100 elementos,Paralelo,2
+1000 elementos,Serial,0
+1000 elementos,Paralelo,1
+10000 elementos,Serial,3
+10000 elementos,Paralelo,8
+100000 elementos,Serial,18
+100000 elementos,Paralelo,36
