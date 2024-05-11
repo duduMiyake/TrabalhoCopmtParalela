@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class SwingChart extends JFrame {
+//Os gráficos são gerados aqui (é necessário o preenchimento do csv para gerar o gráfico (rodar o sort desejado))
+
+public class SwingChart extends JFrame {    
 
     public SwingChart() {
-        super("Gráfico de Tempo de Execução");
+        super("Gráfico de Tempo de Execução"); 
 
         // Criar o conjunto de dados
         DefaultCategoryDataset dataset = createDataset();
