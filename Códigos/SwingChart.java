@@ -20,10 +20,8 @@ public class SwingChart extends JFrame {
     public SwingChart(String nomeArquivo) {
         super("Gráfico de Tempo de Execução");
 
-        // Criar o conjunto de dados inicial
         dataset = createDataset(nomeArquivo);
 
-        // Criar o gráfico inicial
         JFreeChart chart = ChartFactory.createLineChart(
                 "Tempo de Execução", // Título do gráfico
                 "Tamanho do Array", // Rótulo do eixo x
@@ -31,10 +29,8 @@ public class SwingChart extends JFrame {
                 dataset
         );
 
-        // Adicionar o gráfico a um painel de gráfico
         chartPanel = new ChartPanel(chart);
 
-        // Configurações da janela
         setContentPane(chartPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
@@ -45,13 +41,12 @@ public class SwingChart extends JFrame {
         Timer timer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Atualizar o conjunto de dados
                 dataset = createDataset(nomeArquivo);
                 // Atualizar o gráfico
                 chart.getCategoryPlot().setDataset(dataset);
             }
         });
-        timer.start(); // Iniciar o timer
+        timer.start(); 
     }
 
     private DefaultCategoryDataset createDataset(String nomeArquivo) {
