@@ -38,7 +38,7 @@ public class SwingChart extends JFrame {
         setVisible(true);
 
         // Configurar o timer para atualizar o gráfico a cada 100ms (0.1 segundos)
-        Timer timer = new Timer(100, new ActionListener() {
+        Timer timer = new Timer(5000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dataset = createDataset(nomeArquivo);
