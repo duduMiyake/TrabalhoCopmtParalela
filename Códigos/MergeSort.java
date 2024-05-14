@@ -1,9 +1,11 @@
-package Merge_sort;
+package Códigos;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
+
+import javax.swing.SwingUtilities;
 
 public class MergeSort {
     public static void main(String[] args) {
@@ -11,6 +13,9 @@ public class MergeSort {
         int[] tamanhos = {10, 100, 1000, 10000, 100000};
 
         int[] numeros = gerarNumeros(10000);
+
+        //Usa o swingChart para mostrar o gráfico
+        SwingUtilities.invokeLater(() -> new SwingChart("resultados_mergesort.csv"));
 
         for (int tamanho : tamanhos) {
             int[] numerosSerial = gerarNumeros(tamanho);

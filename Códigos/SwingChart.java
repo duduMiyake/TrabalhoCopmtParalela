@@ -1,28 +1,29 @@
+package Códigos;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
-//Os gráficos são gerados aqui (é necessário o preenchimento do csv para gerar o gráfico (rodar o sort desejado))
+public class SwingChart extends JFrame {
 
-public class SwingChart extends JFrame {    
+    private DefaultCategoryDataset dataset;
+    private ChartPanel chartPanel;
 
-    public SwingChart() {
-        super("Gráfico de Tempo de Execução"); 
+    public SwingChart(String nomeArquivo) {
+        super("Gráfico de Tempo de Execução");
 
-        // Criar o conjunto de dados
-        DefaultCategoryDataset dataset = createDataset();
+        // Criar o conjunto de dados inicial
+        dataset = createDataset(nomeArquivo);
 
-        // Criar o gráfico
+        // Criar o gráfico inicial
         JFreeChart chart = ChartFactory.createLineChart(
                 "Tempo de Execução", // Título do gráfico
                 "Tamanho do Array", // Rótulo do eixo x
@@ -31,7 +32,7 @@ public class SwingChart extends JFrame {
         );
 
         // Adicionar o gráfico a um painel de gráfico
-        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel = new ChartPanel(chart);
 
         // Configurações da janela
         setContentPane(chartPanel);
@@ -39,41 +40,32 @@ public class SwingChart extends JFrame {
         setSize(800, 600);
         setLocationRelativeTo(null);
         setVisible(true);
+
+        // Configurar o timer para atualizar o gráfico a cada 100ms (0.1 segundos)
+        Timer timer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Atualizar o conjunto de dados
+                dataset = createDataset(nomeArquivo);
+                // Atualizar o gráfico
+                chart.getCategoryPlot().setDataset(dataset);
+            }
+        });
+        timer.start(); // Iniciar o timer
     }
 
-    private DefaultCategoryDataset createDataset() {
+    private DefaultCategoryDataset createDataset(String nomeArquivo) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Digite a busca desejada (1 para merge, 2 para quick, 3 para insertion e 4 para bubble): " );
-        int busca = scanner.nextInt();
-        String nome;
-        if(busca == 1)
-        {
-            nome = "resultados_mergesort.csv";
-        } else if (busca == 2)
-        {
-            nome = "resultados_quicksort.csv";
-        } else if (busca == 3)
-        {
-            nome = "resultados_insertionsort.csv";
-        } else if (busca == 4)
-        {
-            nome = "resultados_bubblesort.csv";
-        } else 
-        {
-            nome = "resultados_mergesort.csv"; // retorna merge por padrão
-        }
 
-    
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(nome));
+            BufferedReader reader = new BufferedReader(new FileReader(nomeArquivo));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 String tamanhoString = parts[0].split(" ")[0]; // Extrai o tamanho do array da primeira parte
                 int tamanho = Integer.parseInt(tamanhoString); // Converte o tamanho para um número inteiro
                 long tempo = Long.parseLong(parts[2]); // Converte o tempo para um número longo
-    
+
                 dataset.addValue(tempo, parts[1], String.valueOf(tamanho)); // Adiciona os valores ao conjunto de dados
             }
             reader.close();
@@ -82,11 +74,11 @@ public class SwingChart extends JFrame {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-    
+
         return dataset;
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(SwingChart::new);
+        SwingUtilities.invokeLater(() -> new SwingChart("resultados_mergesort.csv"));
     }
 }

@@ -1,15 +1,20 @@
-package Bubble_sort;
+package Códigos;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
-public class BubbleSort {
+import javax.swing.SwingUtilities;
+
+public class QuickSort{
 
     public static void main(String[] args) {
         int[] tamanhos = {10, 100, 1000, 10000, 100000};
         int[] numeros = gerarNumeros(10000);
+
+        //Usa o swingChart para mostrar o gráfico
+        SwingUtilities.invokeLater(() -> new SwingChart("resultados_quicksort.csv"));
 
         for (int tamanho : tamanhos) {
             int[] numerosSerial = gerarNumeros(tamanho);
@@ -19,7 +24,7 @@ public class BubbleSort {
 
             // Serial
             long tempoInicialSerial = System.currentTimeMillis();
-            bubbleSort_serial(numerosSerial);
+            quicksort_serial(numerosSerial, 0, numerosSerial.length - 1);
             long tempoFinalSerial = System.currentTimeMillis();
             long tempoExecucaoSerial = tempoFinalSerial - tempoInicialSerial;
 
@@ -27,14 +32,14 @@ public class BubbleSort {
 
             // Paralelo
             long tempoInicialParalelo = System.currentTimeMillis();
-            bubbleSort_paralelo(numerosParalelo);
+            quicksort_paralelo(numerosParalelo, 0, numerosParalelo.length - 1);
             long tempoFinalParalelo = System.currentTimeMillis();
             long tempoExecucaoParalelo = tempoFinalParalelo - tempoInicialParalelo;
 
             System.out.println("Tempo de execução (Paralelo): " + tempoExecucaoParalelo + " milissegundos");
 
             // Escreve os resultados em um arquivo CSV
-            escreverCSV("resultados_bubblesort.csv", new String[]{"Serial", "Paralelo"}, new long[]{tempoExecucaoSerial, tempoExecucaoParalelo}, tamanho);
+            escreverCSV("resultados_quicksort.csv", new String[]{"Serial", "Paralelo"}, new long[]{tempoExecucaoSerial, tempoExecucaoParalelo}, tamanho);
         }
     }
 
@@ -47,24 +52,35 @@ public class BubbleSort {
         return numeros;
     }
 
-    public static void bubbleSort_serial(int[] arr) {
-        int n = arr.length;
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
-                if (arr[j] > arr[j + 1]) {
-                    // Troca arr[j] e arr[j+1]
-                    int temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                }
-            }
+    public static void quicksort_serial(int[] arr, int inicio, int fim) {
+        if (inicio < fim) {
+            int indiceParticao = particionar(arr, inicio, fim);
+            quicksort_serial(arr, inicio, indiceParticao - 1);
+            quicksort_serial(arr, indiceParticao + 1, fim);
         }
     }
 
-    public static void bubbleSort_paralelo(int[] arr) {
+    public static void quicksort_paralelo(int[] arr, int inicio, int fim) {
         ForkJoinPool pool = new ForkJoinPool();
-        pool.invoke(new BubbleSortParalelo(arr, 0, arr.length - 1));
+        pool.invoke(new QuicksortParalelo(arr, inicio, fim));
         pool.shutdown();
+    }
+
+    public static int particionar(int[] arr, int inicio, int fim) {
+        int pivo = arr[fim];
+        int i = inicio - 1;
+        for (int j = inicio; j < fim; j++) {
+            if (arr[j] < pivo) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[fim];
+        arr[fim] = temp;
+        return i + 1;
     }
 
     public static void escreverCSV(String nomeArquivo, String[] algoritmos, long[] tempos, int tamanho) {
@@ -82,12 +98,12 @@ public class BubbleSort {
         }
     }
 
-    static class BubbleSortParalelo extends RecursiveAction {
+    static class QuicksortParalelo extends RecursiveAction {
         private final int[] array;
         private final int inicio;
         private final int fim;
 
-        public BubbleSortParalelo(int[] array, int inicio, int fim) {
+        public QuicksortParalelo(int[] array, int inicio, int fim) {
             this.array = array;
             this.inicio = inicio;
             this.fim = fim;
@@ -95,16 +111,31 @@ public class BubbleSort {
 
         @Override
         protected void compute() {
-            for (int i = inicio; i < fim; i++) {
-                for (int j = inicio; j < fim - i - 1; j++) {
-                    if (array[j] > array[j + 1]) {
-                        // Troca array[j] e array[j+1]
-                        int temp = array[j];
-                        array[j] = array[j + 1];
-                        array[j + 1] = temp;
-                    }
+            if (inicio < fim) {
+                int indiceParticao = particionar(array, inicio, fim);
+
+                QuicksortParalelo leftTask = new QuicksortParalelo(array, inicio, indiceParticao - 1);
+                QuicksortParalelo rightTask = new QuicksortParalelo(array, indiceParticao + 1, fim);
+
+                invokeAll(leftTask, rightTask);
+            }
+        }
+
+        private int particionar(int[] arr, int inicio, int fim) {
+            int pivo = arr[fim];
+            int i = inicio - 1;
+            for (int j = inicio; j < fim; j++) {
+                if (arr[j] < pivo) {
+                    i++;
+                    int temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
                 }
             }
+            int temp = arr[i + 1];
+            arr[i + 1] = arr[fim];
+            arr[fim] = temp;
+            return i + 1;
         }
     }
 }
